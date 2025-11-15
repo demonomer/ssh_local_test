@@ -1,10 +1,21 @@
 #                    Домашнее задание по теме  <br>«Работа с серверами и протокол удалённого управления SSH»
+```Студент:  Дмитрий Михин, группа РИМ-150921к```
 
-Цель: получить базовые навыки настройкии и использования SSH.  
+Цель: получить базовые навыки настройки и и использования SSH.  
 Конфигурация ОС: локальная машина с Windows 10 и удаленный сервер на ее штатном WSL. 
 
+В работе продемонстрированы:
+- установка и настройка SSH-сервера,
+- подключение к удаленному серверу,
+- копирование файлов между локальной машиной и сервером, 
+- работа с ключами.
 
-## Кейс 1. Настройка и подключение
+Приложенные файлы:  
+- id_wsl_ed25519.pub - публичный ключ,
+- sshd_config - финальный файл настроек SSH,
+- x_ssh_scp_test.txt - файл, который был передан в ходе демонстрации scp.
+
+## Кейс 1. Установка и настройка SSH-сервера
 
 обновим WSL-дистрибутив: 
 > sudo apt update && sudo apt upgrade
@@ -46,7 +57,7 @@ security-заглушка:
 > $ ip addr show eth0  
 > 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000  
 >    link/ether 00:15:5d:4d:47:58 brd ff:ff:ff:ff:ff:ff  
->    inet 192.168.95.133/20 brd 192.168.95.255 scope global eth0  
+>    inet **192.168.95.133**/20 brd 192.168.95.255 scope global eth0  
 < skipped >
 
 в данной конфигурации можем использовать и 192.168.95.133, и localhost
@@ -105,7 +116,9 @@ security-заглушка:
 проверим наличие файла и дату изменения - она отличается от исходной:  
 > PS C:\vboxfolder> Get-ChildItem x* | Format-Table Name,LastWriteTime  
 > Name               LastWriteTime  
-> x_ssh_scp_test.txt 14.11.2025 21:51:15  
+> x_ssh_scp_test.txt 14.11.2025 21:51:15
+
+Также с помощью _scp_ мы передадим ключ на удаленный сервер в следующей задаче.  
 
 **Итог 3: успешно скопирован файл в обе стороны**
 
@@ -126,7 +139,6 @@ security-заглушка:
 > PS C:\vboxfolder> dir C:\Users\Professional\.ssh\id_wsl*    
 >    Directory: C:\Users\Professional\.ssh  
 > Mode                 LastWriteTime         Length Name  
-> ----                 -------------         ------ ----  
 > -a----        14.11.2025     22:10            411 id_wsl_ed25519  
 > -a----        14.11.2025     22:10             97 id_wsl_ed25519.pub  
 
@@ -146,7 +158,7 @@ security-заглушка:
 > Identity added: C:\Users\Professional\.ssh\id_wsl_ed25519 (WSL Access Key)  
 
 теперь ssh при подключении к удаленному серверу не запрашивает пароль:  
-> PS C:\Windows\system32> ssh -p 2222 demonomer@localhost  
+> PS C:\Windows\system32> ssh -p 2222 demonomer@192.168.95.133  
 > Welcome to Ubuntu 24.04.3 LTS (GNU/Linux 6.6.87.2-microsoft-standard-WSL2 x86_64)  
 
 остается в целях безопасности отключить аутентификацию по паролю,  
